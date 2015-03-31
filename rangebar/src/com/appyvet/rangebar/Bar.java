@@ -43,6 +43,9 @@ public class Bar {
 
     private final float mTickHeight;
 
+    private boolean mShowTickStartMiddleEndOnly = false;
+
+
     // Constructor /////////////////////////////////////////////////////////////
 
 
@@ -67,7 +70,9 @@ public class Bar {
             float tickHeightDP,
             int tickColor,
             float barWeight,
-            int barColor) {
+            int barColor,
+            Paint.Style tickStyle,
+            boolean showTickStartMiddleEndOnly) {
 
         mLeftX = x;
         mRightX = x + length;
@@ -88,6 +93,9 @@ public class Bar {
         mTickPaint.setColor(tickColor);
         mTickPaint.setStrokeWidth(barWeight);
         mTickPaint.setAntiAlias(true);
+        mTickPaint.setStyle(tickStyle);
+
+        mShowTickStartMiddleEndOnly = showTickStartMiddleEndOnly;
     }
 
     // Package-Private Methods /////////////////////////////////////////////////
@@ -169,11 +177,23 @@ public class Bar {
      */
     public void drawTicks(Canvas canvas) {
 
-        // Loop through and draw each tick (except final tick).
-        for (int i = 0; i < mNumSegments; i++) {
-            final float x = i * mTickDistance + mLeftX;
-            canvas.drawCircle(x, mY, mTickHeight, mTickPaint);
+        if(!mShowTickStartMiddleEndOnly) {
+            // Loop through and draw each tick (except final tick).
+            for (int i = 0; i < mNumSegments; i++) {
+                final float x = i * mTickDistance + mLeftX;
+                canvas.drawCircle(x, mY, mTickHeight, mTickPaint);
+            }
         }
+        else {
+            // Draw the start tick
+            canvas.drawCircle(0 * mTickDistance + mLeftX, mY, mTickHeight, mTickPaint);
+
+            // Draw the middle tick
+            final float middleX = (mNumSegments / 2) * mTickDistance + mLeftX;
+            canvas.drawCircle(middleX, mY, mTickHeight, mTickPaint);
+        }
+
+
         // Draw final tick. We draw the final tick outside the loop to avoid any
         // rounding discrepancies.
         canvas.drawCircle(mRightX, mY, mTickHeight, mTickPaint);

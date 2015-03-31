@@ -6,6 +6,7 @@ import com.appyvet.rangebarsample.colorpicker.ColorPickerDialog;
 import com.appyvet.rangebarsample.colorpicker.Utils;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;

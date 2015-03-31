@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -174,6 +175,9 @@ public class RangeBar extends View {
 
     private float mLastY;
 
+    private boolean mSelectorIsAbsoluteValue = false;
+    private boolean mTickShowStartMiddleEndOnly = false;
+
     // Constructors ////////////////////////////////////////////////////////////
 
     public RangeBar(Context context) {
@@ -223,6 +227,9 @@ public class RangeBar extends View {
 
         bundle.putBoolean("FIRST_SET_TICK_COUNT", mFirstSetTickCount);
 
+        bundle.putBoolean("SELECTOR_ABSOLUTE_VALUE", mSelectorIsAbsoluteValue);
+        bundle.putBoolean("TICK_SHOW_START_MIDDLE_END_ONLY", mTickShowStartMiddleEndOnly);
+
         return bundle;
     }
 
@@ -255,6 +262,8 @@ public class RangeBar extends View {
             mLeftIndex = bundle.getInt("LEFT_INDEX");
             mRightIndex = bundle.getInt("RIGHT_INDEX");
             mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
+            mSelectorIsAbsoluteValue = bundle.getBoolean("SELECTOR_ABSOLUTE_VALUE");
+            mTickShowStartMiddleEndOnly = bundle.getBoolean("TICK_SHOW_START_MIDDLE_END_ONLY");
 
             setRangePinsByIndices(mLeftIndex, mRightIndex);
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
@@ -320,7 +329,7 @@ public class RangeBar extends View {
 
         final float barLength = w - (2 * marginLeft);
         mBar = new Bar(ctx, marginLeft, yPos, barLength, mTickCount, mTickHeightDP, mTickColor,
-                mBarWeight, mBarColor);
+                mBarWeight, mBarColor, Paint.Style.STROKE, mTickShowStartMiddleEndOnly);
 
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
@@ -976,6 +985,8 @@ public class RangeBar extends View {
                     ta.getDimension(R.styleable.RangeBar_barPaddingBottom,
                             DEFAULT_BAR_PADDING_BOTTOM_DP), getResources().getDisplayMetrics());
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_rangeBar, true);
+            mSelectorIsAbsoluteValue = ta.getBoolean(R.styleable.RangeBar_selectorAbsoluteValue, false);
+            mTickShowStartMiddleEndOnly = ta.getBoolean(R.styleable.RangeBar_tickShowStartMiddleEndOnly, false);
 
         } finally {
             ta.recycle();
@@ -995,7 +1006,9 @@ public class RangeBar extends View {
                 mTickHeightDP,
                 mTickColor,
                 mBarWeight,
-                mBarColor);
+                mBarColor,
+                Paint.Style.STROKE,
+                mTickShowStartMiddleEndOnly);
         invalidate();
     }
 
@@ -1280,6 +1293,11 @@ public class RangeBar extends View {
         float tickValue = (tickIndex == (mTickCount - 1))
                             ? mTickEnd
                             : (tickIndex * mTickInterval) + mTickStart;
+
+        if(mSelectorIsAbsoluteValue) {
+            tickValue = Math.abs(tickValue);
+        }
+
         String xValue = mTickMap.get(tickValue);
         if (xValue == null) {
             if (tickValue == Math.ceil(tickValue)) {

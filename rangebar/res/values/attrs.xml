@@ -6,6 +6,7 @@
         <attr name="tickInterval" format="float"/>
         <attr name="tickHeight" format="dimension" />
         <attr name="tickColor" format="color"/>
+        <attr name="tickShowStartMiddleEndOnly" format="boolean"/>
         <attr name="barWeight" format="dimension" />
         <attr name="barColor" format="reference|color" />
         <attr name="textColor" format="reference|color" />
@@ -14,6 +15,7 @@
         <attr name="pinPadding" format="dimension" />
         <attr name="barPaddingBottom" format="dimension" />
         <attr name="selectorColor" format="reference|color" />
+        <attr name="selectorAbsoluteValue" format="boolean" />
         <attr name="rangeBar" format="boolean" />
         <attr name="connectingLineWeight" format="dimension" />
         <attr name="connectingLineColor" format="reference|color" />
